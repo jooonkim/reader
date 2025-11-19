@@ -37,26 +37,56 @@
         .nav-btn.disabled { opacity: 0.5; pointer-events: none; border-color: #ccc; color: #ccc; }
 
         /* Assistant Panel */
-        #assistant-panel { width: 360px; background: #fdfcfe; border-left: 1px solid #e9ecef; padding: 20px; overflow-y: auto; font-family: -apple-system, sans-serif; }
-        .assistant-header { font-weight: 600; font-size: 1.05em; margin-bottom: 10px; }
-        .assistant-section { margin-bottom: 18px; }
-        .assistant-label { font-size: 0.85em; color: #6c757d; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
-        #contextList { display: flex; flex-direction: column; gap: 8px; }
-        .context-card { background: white; border: 1px solid #dee2e6; border-radius: 6px; padding: 8px 10px; position: relative; }
-        .context-card button { position: absolute; top: 6px; right: 6px; border: none; background: transparent; color: #999; cursor: pointer; font-size: 0.85em; }
-        .context-card button:hover { color: #d11a2a; }
-        .context-card small { display: block; color: #adb5bd; margin-top: 6px; font-size: 0.75em; }
-        .context-empty { font-size: 0.9em; color: #868e96; font-style: italic; }
+        #assistant-panel { width: 420px; background: #f5f5f7; border-left: 1px solid #e9ecef; padding: 30px; overflow-y: auto; font-family: -apple-system, sans-serif; }
+        .assistant-wrapper { max-width: 768px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px; }
+        .assistant-card { background: #ffffff; border: 1px solid #eceef2; border-radius: 18px; padding: 24px; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06); }
+        .section-heading { text-align: center; }
+        .section-heading h2 { font-size: 1.125rem; font-weight: 600; margin: 0; color: #111827; }
+        .section-heading p { font-size: 0.9rem; color: #6b7280; margin: 4px 0 0; }
 
-        .assistant-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-        .assistant-actions button { flex: 1; border: 1px solid #ced4da; background: white; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-weight: 500; }
-        .assistant-actions button.primary { background: #212529; color: white; border-color: #212529; }
-        .assistant-actions button:disabled { opacity: 0.5; cursor: not-allowed; }
+        #contextList { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+        .context-card { background: #f9fafb; border: 1px solid #e3e8ef; border-radius: 12px; padding: 12px 14px 12px 16px; font-size: 0.9rem; line-height: 1.4; color: #374151; position: relative; }
+        .context-card button { position: absolute; top: 10px; right: 10px; border: none; background: transparent; color: #9ca3af; cursor: pointer; font-size: 0.9em; }
+        .context-card button:hover { color: #ef4444; }
+        .context-card small { display: block; color: #9ca3af; margin-top: 8px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; }
+        .context-empty { font-size: 0.9rem; color: #9ca3af; font-style: italic; margin-top: 16px; }
+        .context-meta { font-size: 0.85em; color: #6b7280; margin-top: 8px; }
+        .snippet-controls { margin-top: 16px; display: flex; gap: 10px; align-items: center; }
+        .snippet-controls button { flex: 1; }
 
-        textarea#questionInput { width: 100%; min-height: 80px; border: 1px solid #ced4da; border-radius: 6px; padding: 10px; font-family: inherit; font-size: 0.95em; resize: vertical; }
+        .primary-btn,
+        .secondary-btn,
+        .clear-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            padding: 10px 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .primary-btn { background: #111827; color: #ffffff; }
+        .primary-btn:disabled { background: #4b5563; cursor: not-allowed; }
+        .secondary-btn { background: #ffffff; border-color: #d1d5db; color: #111827; }
+        .secondary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .clear-btn { background: transparent; border-color: #e5e7eb; color: #374151; }
+        .clear-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        #assistantStatus { font-size: 0.85em; color: #868e96; min-height: 18px; margin-top: 6px; }
-        #assistantResponse { background: white; border: 1px solid #e9ecef; border-radius: 6px; padding: 12px; white-space: pre-wrap; line-height: 1.5; font-size: 0.95em; }
+        .snippet-btn { padding: 8px 12px; border-radius: 10px; font-size: 0.9rem; }
+
+        textarea#questionInput { width: 100%; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; font-family: inherit; font-size: 0.9rem; min-height: 6rem; resize: none; background: #ffffff; box-sizing: border-box; margin-top: 16px; }
+        textarea#questionInput::placeholder { font-family: inherit; font-size: 0.9rem; color: #9ca3af; }
+        textarea#questionInput:focus { outline: none; border-color: #111827; box-shadow: 0 0 0 1px #111827; }
+        .question-actions { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+        .question-actions button { flex: 1; }
+
+        #assistantStatus { font-size: 0.9em; color: #6b7280; min-height: 12px; margin-top: 14px; margin-bottom: 2px; }
+        #assistantStatus:empty { display: none; }
+        #assistantResponse { white-space: pre-wrap; line-height: 1.5; font-size: 0.9rem; }
+        .answer-box { min-height: 120px; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; background: #f9fafb; color: #1f2937; margin-top: 16px; width: 100%; box-sizing: border-box; }
+        .question-card { padding-bottom: 20px; }
 
         .selection-tooltip { position: absolute; background: #212529; color: white; padding: 6px 10px; border-radius: 999px; font-size: 0.85em; pointer-events: auto; cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.15); z-index: 10; }
         .selection-tooltip.hidden { display: none; }
@@ -133,32 +163,41 @@
     </div>
 
     <div id="assistant-panel">
-        <div class="assistant-header">LLM Assistant</div>
+        <div class="assistant-wrapper">
 
-        <div class="assistant-section">
-            <div class="assistant-label">Context snippets</div>
-            <div id="contextList"></div>
-            <div id="contextEmpty" class="context-empty">Highlight text and use “Add to context” to build a prompt.</div>
-            <div id="contextMeta" class="assistant-label" style="margin-top: 8px; text-transform:none;"></div>
-            <div class="assistant-actions" style="margin-top:10px;">
-                <button id="addChapterBtn" title="Use the whole chapter as context">Use section</button>
-                <button id="clearContextBtn" title="Remove all snippets">Clear</button>
-            </div>
-        </div>
+            <section class="assistant-card" aria-labelledby="contextHeading">
+                <div class="section-heading">
+                    <h2 id="contextHeading">Context Snippet</h2>
+                    <p>Highlight text and use “Add to context.”</p>
+                </div>
+                <div id="contextList"></div>
+                <div id="contextEmpty" class="context-empty">No snippet added yet. Highlight text in the chapter to capture it.</div>
+                <div id="contextMeta" class="context-meta"></div>
+                <div class="snippet-controls">
+                    <button id="addChapterBtn" class="secondary-btn snippet-btn" title="Use the whole chapter as context">Use entire chapter</button>
+                    <button id="clearContextBtn" class="clear-btn snippet-btn" title="Remove the snippet">Clear</button>
+                </div>
+            </section>
 
-        <div class="assistant-section">
-            <div class="assistant-label">Question</div>
-            <textarea id="questionInput" placeholder="Ask about the selected passage..."></textarea>
-            <div class="assistant-actions" style="margin-top: 10px;">
-                <button id="askButton" class="primary">Ask question</button>
-                <button id="summaryButton" title="Get a concise summary of the active section">Summarize section</button>
-            </div>
-            <div id="assistantStatus"></div>
-        </div>
+            <section class="assistant-card question-card" aria-labelledby="questionHeading">
+                <div class="section-heading">
+                    <h2 id="questionHeading">Question</h2>
+                </div>
+                <textarea id="questionInput" placeholder="Type your question..."></textarea>
+                <div class="question-actions">
+                    <button id="askButton" class="primary-btn">Ask</button>
+                    <button id="summaryButton" class="secondary-btn" title="Get a concise summary of the chapter">Summarize</button>
+                </div>
+                <div id="assistantStatus"></div>
+            </section>
 
-        <div class="assistant-section">
-            <div class="assistant-label">Answer</div>
-            <div id="assistantResponse">Answers will appear here.</div>
+            <section class="assistant-card" aria-labelledby="answerHeading">
+                <div class="section-heading">
+                    <h2 id="answerHeading">Answer</h2>
+                </div>
+                <div id="assistantResponse" class="answer-box">The answer will appear here.</div>
+            </section>
+
         </div>
     </div>
 
@@ -242,6 +281,8 @@
         const addChapterBtn = document.getElementById("addChapterBtn");
         const tooltipEl = document.getElementById("selectionTooltip");
         const mainEl = document.getElementById("main");
+        const answerPlaceholder = "The answer will appear here.";
+        responseEl.textContent = answerPlaceholder;
 
         function makeId() {
             if (window.crypto?.randomUUID) return crypto.randomUUID();
@@ -250,37 +291,34 @@
 
         function renderContext() {
             contextListEl.innerHTML = "";
-            if (!assistantState.contextSnippets.length) {
+            const snippet = assistantState.contextSnippets[0];
+            if (!snippet) {
                 contextEmptyEl.style.display = "block";
                 contextMetaEl.textContent = "";
                 return;
             }
             contextEmptyEl.style.display = "none";
 
-            let totalChars = 0;
-            assistantState.contextSnippets.forEach((snippet, idx) => {
-                totalChars += snippet.text.length;
-                const card = document.createElement("div");
-                card.className = "context-card";
+            const card = document.createElement("div");
+            card.className = "context-card";
 
-                const remover = document.createElement("button");
-                remover.setAttribute("aria-label", "Remove snippet");
-                remover.innerHTML = "×";
-                remover.addEventListener("click", () => removeSnippet(snippet.id));
+            const remover = document.createElement("button");
+            remover.setAttribute("aria-label", "Remove snippet");
+            remover.innerHTML = "×";
+            remover.addEventListener("click", () => removeSnippet(snippet.id));
 
-                const content = document.createElement("div");
-                content.textContent = snippet.text;
+            const content = document.createElement("div");
+            content.textContent = snippet.text;
 
-                const meta = document.createElement("small");
-                meta.textContent = snippet.label || `Snippet ${idx + 1}`;
+            const meta = document.createElement("small");
+            meta.textContent = snippet.label || "Snippet";
 
-                card.appendChild(remover);
-                card.appendChild(content);
-                card.appendChild(meta);
-                contextListEl.appendChild(card);
-            });
+            card.appendChild(remover);
+            card.appendChild(content);
+            card.appendChild(meta);
+            contextListEl.appendChild(card);
 
-            contextMetaEl.textContent = `${assistantState.contextSnippets.length} snippet(s) • ${totalChars} characters`;
+            contextMetaEl.textContent = `1 snippet • ${snippet.text.length} characters`;
         }
 
         function removeSnippet(id) {
@@ -301,7 +339,7 @@
                 text: clean.length > maxLen ? clean.slice(0, maxLen) + "…" : clean,
                 label: label || `Selection`,
             };
-            assistantState.contextSnippets.push(snippet);
+            assistantState.contextSnippets = [snippet];
             renderContext();
         }
 
@@ -360,11 +398,12 @@
                 }
 
                 const data = await res.json();
-                responseEl.textContent = data.answer || "(No answer returned)";
+                const answer = (data.answer || "").trim();
+                responseEl.textContent = answer || answerPlaceholder;
                 const meta = data.model ? `Answered with ${data.model}` : "Answered";
                 statusEl.textContent = `${meta} • ${data.used_chars || 0} context characters`;
             } catch (error) {
-                responseEl.textContent = "";
+                responseEl.textContent = answerPlaceholder;
                 statusEl.textContent = error.message;
             } finally {
                 assistantState.isBusy = false;
