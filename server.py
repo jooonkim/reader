@@ -1,7 +1,7 @@
 import os
 import pickle
 from functools import lru_cache
-from typing import Optional, Literal, Iterable, Dict, Tuple
+from typing import Optional, Literal, Iterable, Dict, Tuple, List
 from urllib.parse import unquote
 
 from fastapi import FastAPI, Request, HTTPException
@@ -247,6 +247,12 @@ def _build_spine_lookup(book: Book) -> Dict[str, int]:
     return lookup
 
 
+def _flatten_toc(entries: Iterable[TOCEntry]) -> Iterable[TOCEntry]:
+    for entry in entries:
+        yield entry
+        yield from _flatten_toc(entry.children)
+
+
 def _build_toc_index_map(book: Book, spine_lookup: Dict[str, int]) -> Tuple[Dict[str, int], Dict[int, str]]:
     mapping: Dict[str, int] = {}
     chapter_primary_map: Dict[int, str] = {}
@@ -292,6 +298,25 @@ async def read_chapter(request: Request, book_id: str, chapter_ref: str):
     spine_lookup = _build_spine_lookup(book)
     toc_index_map, chapter_primary_map = _build_toc_index_map(book, spine_lookup)
     active_toc_href = _find_active_toc_href(book, chapter_index, chapter_ref, chapter_primary_map)
+    flat_toc: List[TOCEntry] = list(_flatten_toc(book.toc))
+    active_entry = next((entry for entry in flat_toc if entry.href == active_toc_href), None)
+    active_anchor = active_entry.anchor if active_entry and active_entry.anchor else ""
+    active_entry_title = active_entry.title if active_entry else current_chapter.title
+
+    next_anchor = ""
+    if active_entry and active_entry.file_href:
+        normalized_active_file = _normalize_href(active_entry.file_href)
+        same_file_entries = [
+            entry for entry in flat_toc
+            if _normalize_href(entry.file_href) == normalized_active_file
+        ]
+        for idx, entry in enumerate(same_file_entries):
+            if entry.href == active_toc_href:
+                for follower in same_file_entries[idx + 1:]:
+                    if follower.anchor:
+                        next_anchor = follower.anchor
+                        break
+                break
 
     # Calculate Prev/Next links
     prev_idx = chapter_index - 1 if chapter_index > 0 else None
@@ -307,6 +332,9 @@ async def read_chapter(request: Request, book_id: str, chapter_ref: str):
         "next_idx": next_idx,
         "active_toc_href": active_toc_href,
         "toc_index_map": toc_index_map,
+        "active_anchor": active_anchor,
+        "next_anchor": next_anchor,
+        "active_entry_title": active_entry_title,
     })
 
 @app.get("/read/{book_id}/images/{image_name}")

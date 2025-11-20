@@ -543,6 +543,11 @@
             "bookId": book_id,
             "chapterIndex": chapter_index,
             "bookTitle": book.metadata.title,
+            "activeTocHref": active_toc_href,
+            "activeAnchor": active_anchor,
+            "nextAnchor": next_anchor,
+            "activeTocTitle": active_entry_title,
+            "chapterTitle": current_chapter.title,
         } | tojson | safe }}`);
 
         const assistantState = {
@@ -626,13 +631,98 @@
             renderContext();
         }
 
+        function cssEscapeIdent(value) {
+            if (window.CSS?.escape) {
+                return CSS.escape(value);
+            }
+            return String(value).replace(/["\\]/g, "\\$&");
+        }
+
+        function findAnchorElement(anchorId) {
+            if (!anchorId) return null;
+            const direct = document.getElementById(anchorId);
+            if (direct) return direct;
+            try {
+                return document.querySelector(`[name="${cssEscapeIdent(anchorId)}"]`);
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function normalizeAnchorBoundary(anchorEl, container) {
+            if (!anchorEl || !container.contains(anchorEl)) {
+                return null;
+            }
+            const headingParent = anchorEl.closest?.("h1,h2,h3,h4,h5,h6");
+            if (headingParent && container.contains(headingParent)) {
+                return headingParent;
+            }
+            if (anchorEl.tagName === "A" && !anchorEl.textContent.trim()) {
+                if (anchorEl.nextElementSibling && container.contains(anchorEl.nextElementSibling)) {
+                    return anchorEl.nextElementSibling;
+                }
+                if (anchorEl.parentElement && container.contains(anchorEl.parentElement)) {
+                    return anchorEl.parentElement;
+                }
+            }
+            return anchorEl;
+        }
+
+        function getAnchorRangeText(startAnchor, endAnchor) {
+            const contentEl = document.querySelector(".book-content");
+            if (!contentEl || !startAnchor) {
+                return "";
+            }
+            const startEl = findAnchorElement(startAnchor);
+            if (!startEl || !contentEl.contains(startEl)) {
+                return "";
+            }
+            const range = document.createRange();
+            const startNode = normalizeAnchorBoundary(startEl, contentEl) || startEl;
+            try {
+                range.setStartBefore(startNode);
+            } catch (error) {
+                return "";
+            }
+            let endSet = false;
+            if (endAnchor) {
+                const endEl = findAnchorElement(endAnchor);
+                if (endEl && contentEl.contains(endEl)) {
+                    const endNode = normalizeAnchorBoundary(endEl, contentEl) || endEl;
+                    try {
+                        range.setEndBefore(endNode);
+                        endSet = true;
+                    } catch (error) {
+                        endSet = false;
+                    }
+                }
+            }
+            if (!endSet) {
+                try {
+                    range.setEndAfter(contentEl.lastChild || contentEl);
+                } catch (error) {
+                    return "";
+                }
+            }
+            return range.toString().trim();
+        }
+
         function addChapterAsContext() {
-            const chapterText = document.querySelector(".book-content")?.innerText || "";
+            let chapterText = "";
+            if (readerConfig.activeAnchor) {
+                chapterText = getAnchorRangeText(readerConfig.activeAnchor, readerConfig.nextAnchor);
+            }
+            if (!chapterText.trim()) {
+                chapterText = document.querySelector(".book-content")?.innerText || "";
+            }
             if (!chapterText.trim()) {
                 alert("Couldn't read the chapter text from the page.");
                 return;
             }
-            addSnippetFromSelection(chapterText, "Current section", 6000);
+            const label = readerConfig.activeTocTitle
+                ? `Chapter: ${readerConfig.activeTocTitle}`
+                : (readerConfig.chapterTitle || "Current section");
+            addSnippetFromSelection(chapterText, label, 6000);
         }
 
         function getCombinedContext() {
